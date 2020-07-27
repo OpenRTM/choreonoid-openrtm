@@ -380,7 +380,7 @@ bool RTComponentImpl::createRTC(PropertyMap& prop)
                 string initFunc(componentName + "Init");
                 setupModules(actualFilename, initFunc, componentName, prop);
             } else {
-                mv->putln(format(_("A file of RTC \"{}\" does not exist."), componentName));
+                mv->putln(MessageView::ERROR,format(_("File \"{}\" of RTC \"{}\" does not exist."), dllPath.string(), componentName));
             }
         }
     }
@@ -390,7 +390,7 @@ bool RTComponentImpl::createRTC(PropertyMap& prop)
     if (created) {
         mv->putln(format(_("RTC \"{0}\" has been created from \"{1}\"."), componentName, actualFilename));
     } else {
-        mv->putln(format(_("RTC \"{}\" cannot be created."), componentName));
+        mv->putln(MessageView::ERROR, format(_("RTC \"{}\" cannot be created."), componentName));
     }
 
     return created;

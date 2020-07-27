@@ -854,14 +854,22 @@ bool BodyRTCItemImpl::restore(const Archive& archive)
 void BodyRTCItemImpl::detectRtcs()
 {
     RTC::Manager& rtcManager = RTC::Manager::instance();
-    
+
     string nameServer = rtcManager.getConfig()["corba.nameservers"];
     int comPos = nameServer.find(",");
     if (comPos < 0){
         comPos = nameServer.length();
     }
     nameServer = nameServer.substr(0, comPos);
-    naming = new RTC::CorbaNaming(rtcManager.getORB(), nameServer.c_str());
+    try
+    {
+      naming = new RTC::CorbaNaming(rtcManager.getORB(), nameServer.c_str());
+    }
+    catch(std::bad_alloc & e)
+    {
+      mv->putln(format(_("[BodyRTCItem] Failed to create CorbaNaming with nameserver: \"{}\" (configured from RTC Manager \"corba.nameservers\"). Exception was {}"), nameServer, e.what()));
+      return;
+    }
 
     for(TimeRateMap::iterator it = bridgeConf->timeRateMap.begin(); it != bridgeConf->timeRateMap.end(); ++it){
         RTC::RTObject_var rtcRef;
