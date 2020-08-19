@@ -6,6 +6,7 @@
 #include <cnoid/SimpleController>
 #include <cnoid/SharedJoystick>
 #include <cnoid/OpenRTMUtil>
+#include <rtm/idl/BasicDataTypeSkel.h>
 #include <rtm/DataFlowComponentBase.h>
 #include <rtm/DataInPort.h>
 #include <rtm/idl/BasicDataTypeSkel.h>

@@ -8,8 +8,8 @@
 #include <cnoid/ViewManager>
 #include <cnoid/LazyCaller>
 #include <cnoid/CorbaUtil>
+#include <rtm/idl/BasicDataTypeSkel.h>
 #include <rtm/DataFlowComponentBase.h>
-#include <rtm/DataInPort.h>
 
 #ifdef USE_BUILTIN_CAMERA_IMAGE_IDL
 # include "deprecated/corba/CameraImage.hh"
@@ -20,6 +20,7 @@
 #  include <rtm/ext/CameraCommonInterface.hh>
 # endif
 #endif
+#include <rtm/DataInPort.h>
 
 #include <QBoxLayout>
 #include <fmt/format.h>

@@ -14,15 +14,15 @@
 #include <cnoid/RangeSensor>
 #include <rtm/RTC.h>
 #include <rtm/PortBase.h>
-#include <rtm/OutPort.h>
-#include <rtm/InPort.h>
 #include <rtm/idl/InterfaceDataTypes.hh>
 #include <rtm/idl/BasicDataType.hh>
 #include <rtm/idl/ExtendedDataTypes.hh>
+#include <rtm/OutPort.h>
+#include <rtm/InPort.h>
 #include <mutex>
 
 namespace cnoid {
-    
+
 class BodyRTCItem;
 
 class PortHandler

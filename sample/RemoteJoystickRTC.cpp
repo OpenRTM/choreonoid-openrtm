@@ -3,10 +3,10 @@
    @author Shin'ichiro Nakaoka
 */
 
+#include <rtm/idl/BasicDataTypeSkel.h>
 #include <cnoid/ExtJoystick>
 #include <rtm/DataFlowComponentBase.h>
 #include <rtm/DataInPort.h>
-#include <rtm/idl/BasicDataTypeSkel.h>
 
 using namespace cnoid;
 

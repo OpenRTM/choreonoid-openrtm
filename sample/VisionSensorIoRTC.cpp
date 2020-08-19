@@ -8,11 +8,7 @@
 #include <cnoid/RangeCamera>
 #include <cnoid/ConnectionSet>
 #include <cnoid/ThreadPool>
-#include <rtm/DataOutPort.h>
-#include <rtm/DataInPort.h>
-#include <rtm/idl/BasicDataTypeSkel.h>
 #include <rtm/idl/InterfaceDataTypes.hh>
-#include <cnoid/corba/PointCloud.hh>
 
 #ifdef _WIN32
 #include <rtm/idl/CameraCommonInterface.hh>
@@ -22,6 +18,9 @@ extern "C" {
 }
 #else
 #include <rtm/ext/CameraCommonInterface.hh>
+#include <cnoid/corba/PointCloud.hh>
+#include <rtm/DataOutPort.h>
+#include <rtm/DataInPort.h>
 #include <jpeglib.h>
 #endif
 

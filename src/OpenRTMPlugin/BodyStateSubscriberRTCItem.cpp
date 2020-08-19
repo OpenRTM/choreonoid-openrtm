@@ -5,6 +5,8 @@
 
 #include "BodyStateSubscriberRTCItem.h"
 #include "OpenRTMUtil.h"
+#include <rtm/idl/InterfaceDataTypes.hh>
+#include <rtm/DataFlowComponentBase.h>
 #include <cnoid/BodyItem>
 #include <cnoid/RangeCamera>
 #include <cnoid/RangeSensor>
@@ -14,9 +16,6 @@
 #include <cnoid/Config>
 #include <cnoid/MessageView>
 #include <cnoid/LazyCaller>
-#include <rtm/DataFlowComponentBase.h>
-#include <rtm/DataInPort.h>
-#include <rtm/idl/InterfaceDataTypes.hh>
 #include <cnoid/corba/PointCloud.hh>
 #include <fmt/format.h>
 #include <mutex>
@@ -30,6 +29,8 @@
 #  include <rtm/ext/CameraCommonInterface.hh>
 # endif
 #endif
+
+#include <rtm/DataInPort.h>
 
 #if defined(_WIN32) && defined(ERROR)
 #undef ERROR

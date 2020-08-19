@@ -3,9 +3,6 @@
    \author Shizuko Hattori
 */
 
-#include "VirtualRobotPortHandler.h"
-#include "BodyRTCItem.h"
-
 #include <cnoid/corba/PointCloud.hh>
 
 #ifdef USE_BUILTIN_CAMERA_IMAGE_IDL
@@ -17,6 +14,10 @@
 #  include <rtm/ext/CameraCommonInterface.hh>
 # endif
 #endif
+
+#include "VirtualRobotPortHandler.h"
+#include "BodyRTCItem.h"
+
 
 #include <cnoid/EigenUtil>
 #include <cnoid/DyBody>
