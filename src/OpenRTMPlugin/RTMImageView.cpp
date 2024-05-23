@@ -14,7 +14,11 @@
 #ifdef USE_BUILTIN_CAMERA_IMAGE_IDL
 # include "deprecated/corba/CameraImage.hh"
 #else
-# include <rtm/idl/CameraCommonInterface.hh>
+  #if defined(OPENRTM_VERSION11)
+  # include <rtm/ext/CameraCommonInterface.hh>
+  #else
+  # include <rtm/idl/CameraCommonInterface.hh>
+  #endif
 #endif
 #include <rtm/DataInPort.h>
 
