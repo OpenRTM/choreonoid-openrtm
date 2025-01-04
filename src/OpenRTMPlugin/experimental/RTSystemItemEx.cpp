@@ -13,6 +13,9 @@
 #include <fmt/format.h>
 #include <thread>
 #include "../gettext.h"
+#include <qevent.h>
+#include <cnoid/src/Util/Selection.h>
+#include <cnoid/src/Base/PutPropertyFunction.h>
 
 using namespace cnoid;
 using namespace std;

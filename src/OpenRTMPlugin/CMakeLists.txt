@@ -19,13 +19,13 @@ set(plugin_sources
   PortConnectionDialog.cpp
   ProfileHandler.cpp
   pugixml/pugixml.cpp
-  deprecated/BodyRTCItem.cpp
-  deprecated/VirtualRobotRTC.cpp
-  deprecated/VirtualRobotPortHandler.cpp
-  deprecated/ChoreonoidExecutionContext.cpp
-  deprecated/ChoreonoidPeriodicExecutionContext.cpp
-  deprecated/BridgeConf.cpp
-  deprecated/PointCloudSubscriberRTCItem.cpp
+  #deprecated/BodyRTCItem.cpp
+  #deprecated/VirtualRobotRTC.cpp
+  #deprecated/VirtualRobotPortHandler.cpp
+  #deprecated/ChoreonoidExecutionContext.cpp
+  #deprecated/ChoreonoidPeriodicExecutionContext.cpp
+  #deprecated/BridgeConf.cpp
+  #deprecated/PointCloudSubscriberRTCItem.cpp
   )
 
 set(public_headers

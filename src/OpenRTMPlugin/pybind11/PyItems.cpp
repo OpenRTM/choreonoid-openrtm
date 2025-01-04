@@ -5,7 +5,7 @@
 #include "../RTCItem.h"
 #include "../ControllerRTCItem.h"
 #include "../BodyIoRTCItem.h"
-#include "../deprecated/BodyRTCItem.h"
+//#include "../deprecated/BodyRTCItem.h"
 #if defined(_WINDOWS) && defined(HAVE_UNISTD_H)
 #undef HAVE_UNISTD_H
 #endif
@@ -42,12 +42,14 @@ void exportItems(py::module m)
 
     PyItemList<ControllerRTCItem>(m, "ControllerRTCItemList");
 
+    
     py::class_<BodyIoRTCItem, BodyIoRTCItemPtr, ControllerRTCItem>(m, "BodyIoRTCItem")
         .def(py::init<>())
         ;
 
     PyItemList<BodyIoRTCItem>(m, "BodyIoRTCItemList");
-
+   
+    /*
     py::class_<BodyRTCItem, BodyRTCItemPtr, ControllerItem> bodyRTCItemClass(m, "BodyRTCItem");
     bodyRTCItemClass
         .def("setControllerModule", &BodyRTCItem::setControllerModule)
@@ -62,6 +64,7 @@ void exportItems(py::module m)
         .value("FILE", BodyRTCItem::ConfigMode::CONF_FILE_MODE)
         .value("ALL", BodyRTCItem::ConfigMode::CONF_ALL_MODE)
         .export_values();
+    */
 }
 
 }

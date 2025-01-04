@@ -24,11 +24,11 @@
 
 #include "RTSCommonUtil.h"
 #include "BodyStateSubscriberRTCItem.h"
-#include "deprecated/VirtualRobotRTC.h"
-#include "deprecated/BodyRTCItem.h"
-#include "deprecated/ChoreonoidExecutionContext.h"
-#include "deprecated/ChoreonoidPeriodicExecutionContext.h"
-#include "deprecated/PointCloudSubscriberRTCItem.h"
+//#include "deprecated/VirtualRobotRTC.h"
+//#include "deprecated/BodyRTCItem.h"
+//#include "deprecated/ChoreonoidExecutionContext.h"
+//#include "deprecated/ChoreonoidPeriodicExecutionContext.h"
+//#include "deprecated/PointCloudSubscriberRTCItem.h"
 #include <cnoid/Plugin>
 #include <cnoid/ItemManager>
 #include <cnoid/Archive>
@@ -197,8 +197,8 @@ public:
         registerExecutionContext<SimulationPeriodicExecutionContext>("SimulationPeriodicExecutionContext");
 
         // Deprecated
-        registerExecutionContext<ChoreonoidExecutionContext>("ChoreonoidExecutionContext");
-        registerExecutionContext<ChoreonoidPeriodicExecutionContext>("ChoreonoidPeriodicExecutionContext");
+        //registerExecutionContext<ChoreonoidExecutionContext>("ChoreonoidExecutionContext");
+        //registerExecutionContext<ChoreonoidPeriodicExecutionContext>("ChoreonoidPeriodicExecutionContext");
 
         manager->activateManager();
 
@@ -213,9 +213,9 @@ public:
         BodyIoRTCItem::initialize(this);
         ControllerRTCItem::initialize(this);
         RTCItem::initialize(this);
-        BodyRTCItem::initialize(this);
+        //BodyRTCItem::initialize(this);
 
-        VirtualRobotRTC::registerFactory(manager, "VirtualRobot");
+        //VirtualRobotRTC::registerFactory(manager, "VirtualRobot");
 
         manager->runManager(true);
 
@@ -265,7 +265,7 @@ public:
 #endif
 
         BodyStateSubscriberRTCItem::initializeClass(this);
-        PointCloudSubscriberRTCItem::initializeClass(this);
+        //PointCloudSubscriberRTCItem::initializeClass(this);
 
         DDEBUG("initialize Finished");
 
