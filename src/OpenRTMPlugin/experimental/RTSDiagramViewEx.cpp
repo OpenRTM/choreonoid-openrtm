@@ -22,6 +22,7 @@
 #include <QMessageBox>
 #include <fmt/format.h>
 #include "../gettext.h"
+#include <src/OpenRTMPlugin/RTSystemItem.h>
 
 using namespace cnoid;
 using namespace std;

@@ -19,13 +19,13 @@ set(plugin_sources
   PortConnectionDialog.cpp
   ProfileHandler.cpp
   pugixml/pugixml.cpp
-  deprecated/BodyRTCItem.cpp
-  deprecated/VirtualRobotRTC.cpp
-  deprecated/VirtualRobotPortHandler.cpp
-  deprecated/ChoreonoidExecutionContext.cpp
-  deprecated/ChoreonoidPeriodicExecutionContext.cpp
-  deprecated/BridgeConf.cpp
-  deprecated/PointCloudSubscriberRTCItem.cpp
+  #deprecated/BodyRTCItem.cpp
+  #deprecated/VirtualRobotRTC.cpp
+  #deprecated/VirtualRobotPortHandler.cpp
+  #deprecated/ChoreonoidExecutionContext.cpp
+  #deprecated/ChoreonoidPeriodicExecutionContext.cpp
+  #deprecated/BridgeConf.cpp
+  #deprecated/PointCloudSubscriberRTCItem.cpp
   )
 
 set(public_headers
@@ -105,7 +105,7 @@ choreonoid_add_plugin(${plugin}
 if(IS_MASTER_PROJECT)
   target_compile_definitions(${plugin} PUBLIC ${CHOREONOID_QT_COMPILE_DEFINITIONS})
   target_link_libraries(${plugin}
-    CnoidBodyIoRTC
+    PUBLIC CnoidBodyIoRTC
     ${OPENRTM_LIBRARIES} ${CHOREONOID_CORBA_PLUGIN_LIBRARIES} ${CHOREONOID_BODY_PLUGIN_LIBRARIES})
 else()
   target_link_libraries(${plugin}

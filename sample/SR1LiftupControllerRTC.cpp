@@ -9,7 +9,6 @@
 #include <cnoid/Link>
 #include <cnoid/EigenUtil>
 #include <cnoid/FileUtil>
-#include <boost/filesystem.hpp>
 
 using namespace std;
 using namespace cnoid;

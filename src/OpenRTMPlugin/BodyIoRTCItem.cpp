@@ -41,6 +41,11 @@ public:
     virtual bool isNoDelayMode() const override;
     virtual bool setNoDelayMode(bool on) override;
     virtual std::string controllerName(void) const override;
+    virtual std::shared_ptr<BodyMotion> logBodyMotion() override;
+    virtual SignalProxy<void()> sigLogFlushRequested() override;
+    virtual bool enableLog() override;
+    virtual void outputLogFrame(Referenced* logFrame) override;
+    virtual bool isSimulationFromInitialState() const override;
 };
 
 }
@@ -190,6 +195,30 @@ bool BodyIoRTCItemImpl::setNoDelayMode(bool on)
 std::string BodyIoRTCItemImpl::controllerName(void) const
 {
     return self->name();
+}
+
+std::shared_ptr<BodyMotion> cnoid::BodyIoRTCItemImpl::logBodyMotion()
+{
+    return std::shared_ptr<BodyMotion>();
+}
+
+SignalProxy<void()> cnoid::BodyIoRTCItemImpl::sigLogFlushRequested()
+{
+    return SignalProxy<void()>();
+}
+
+bool cnoid::BodyIoRTCItemImpl::enableLog()
+{
+    return false;
+}
+
+void cnoid::BodyIoRTCItemImpl::outputLogFrame(Referenced* logFrame)
+{
+}
+
+bool cnoid::BodyIoRTCItemImpl::isSimulationFromInitialState() const
+{
+    return false;
 }
 
 bool BodyIoRTCItem::createRTC()

@@ -7,7 +7,6 @@
 #include <cnoid/BodyMotion>
 #include <cnoid/ExecutablePath>
 #include <cnoid/FileUtil>
-#include <boost/filesystem.hpp>
 
 using namespace std;
 using namespace cnoid;
