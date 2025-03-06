@@ -30,7 +30,11 @@ ChoreonoidExecutionContext::~ChoreonoidExecutionContext()
 }
 
 
+#if defined(OPENRTM_VERSION11)
+void ChoreonoidExecutionContext::tick() throw(CORBA::SystemException)
+#else
 void ChoreonoidExecutionContext::tick()
+#endif
 {
 #if defined(OPENRTM_VERSION11)
     std::for_each(m_comps.begin(), m_comps.end(), invoke_worker());
@@ -40,13 +44,21 @@ void ChoreonoidExecutionContext::tick()
 }
 
 
+#if defined(OPENRTM_VERSION11)
+int ChoreonoidExecutionContext::svc(void) throw(CORBA::SystemException)
+#else
 int ChoreonoidExecutionContext::svc(void)
+#endif
 {
     return 0;
 }
 
 
+#if defined(OPENRTM_VERSION11)
+RTC::ReturnCode_t ChoreonoidExecutionContext::deactivate_component(RTC::LightweightRTObject_ptr comp) throw(CORBA::SystemException)
+#else
 RTC::ReturnCode_t ChoreonoidExecutionContext::deactivate_component(RTC::LightweightRTObject_ptr comp)
+#endif
 {
 #if defined(OPENRTM_VERSION11)
     RTC_TRACE(("deactivate_component()"));

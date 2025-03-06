@@ -34,11 +34,19 @@ class SimulationExecutionContext : public RTC::OpenHRPExecutionContext
 public:
     SimulationExecutionContext();
     virtual ~SimulationExecutionContext(void);
+#ifdef OPENRTM_VERSION11
+    virtual void tick(void) throw(CORBA::SystemException) override;
+    virtual int svc(void) throw(CORBA::SystemException);
+    virtual RTC::ReturnCode_t activate_component(RTC::LightweightRTObject_ptr comp) throw(CORBA::SystemException) override;
+    virtual RTC::ReturnCode_t deactivate_component(RTC::LightweightRTObject_ptr comp) throw(CORBA::SystemException) override;
+    virtual RTC::ReturnCode_t reset_component(RTC::LightweightRTObject_ptr comp) throw(CORBA::SystemException) override;
+#else
     virtual void tick(void) override;
     virtual int svc(void);
     virtual RTC::ReturnCode_t activate_component(RTC::LightweightRTObject_ptr comp) override;
     virtual RTC::ReturnCode_t deactivate_component(RTC::LightweightRTObject_ptr comp) override;
     virtual RTC::ReturnCode_t reset_component(RTC::LightweightRTObject_ptr comp) override;
+#endif
 };
 
 }
