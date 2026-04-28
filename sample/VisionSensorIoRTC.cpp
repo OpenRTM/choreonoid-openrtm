@@ -3,14 +3,14 @@
    @author Shizuko Hattori
 */
 
+#include <rtm/idl/InterfaceDataTypes.hh>
+#include <rtm/idl/CameraCommonInterface.hh>
+#include <cnoid/corba/PointCloud.hh>
 #include <cnoid/BodyIoRTC>
 #include <cnoid/RangeSensor>
 #include <cnoid/RangeCamera>
 #include <cnoid/ConnectionSet>
 #include <cnoid/ThreadPool>
-#include <rtm/idl/InterfaceDataTypes.hh>
-#include <rtm/idl/CameraCommonInterface.hh>
-#include <cnoid/corba/PointCloud.hh>
 #include <rtm/DataOutPort.h>
 #include <rtm/DataInPort.h>
 

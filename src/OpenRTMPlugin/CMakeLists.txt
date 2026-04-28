@@ -77,9 +77,8 @@ else()
   set(qt_wrap_cpp_files ${qt_wrap_cpp_files} RTSDiagramView.h)
 endif()  
 
-qt5_add_resources(RC_SRCS OpenRTMPlugin.qrc)
-
-qt5_wrap_cpp(qtsources ${qt_wrap_cpp_files})
+choreonoid_qt_add_resources(RC_SRCS OpenRTMPlugin.qrc)
+choreonoid_qt_wrap_cpp(qtsources ${qt_wrap_cpp_files})
 
 set(plugin_sources ${plugin_sources} ${qtsources})
 

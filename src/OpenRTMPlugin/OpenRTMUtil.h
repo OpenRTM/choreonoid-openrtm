@@ -39,7 +39,7 @@ typename ServiceType::_ptr_type findRTCService(RTC::RTObject_ptr rtc, const std:
     return CORBA::is_nil(obj) ? ServiceType::_nil() : ServiceType::_narrow(obj);
 }
 
-template<> CNOID_EXPORT CORBA::Object::_ptr_type findRTCService<CORBA::Object>(RTC::RTObject_ptr rtc, const std::string& name);
+template<> /*CNOID_EXPORT*/ CORBA::Object::_ptr_type findRTCService<CORBA::Object>(RTC::RTObject_ptr rtc, const std::string& name);
 
 }
 

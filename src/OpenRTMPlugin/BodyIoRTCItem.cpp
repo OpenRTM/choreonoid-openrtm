@@ -7,14 +7,13 @@
 #include <cnoid/BodyItem>
 #include <cnoid/ItemManager>
 #include <cnoid/MessageView>
-#include <fmt/format.h>
+#include <cnoid/Format>
 #include "gettext.h"
 
 #include "LoggerUtil.h"
 
 using namespace std;
 using namespace cnoid;
-using fmt::format;
 
 namespace cnoid {
 
@@ -240,7 +239,7 @@ bool BodyIoRTCItemImpl::createBodyIoRTC()
         bodyIoRTC = dynamic_cast<BodyIoRTC*>(self->rtc());
         if(!bodyIoRTC){
             mv->putln(
-                format(_("RTC \"{0}\" of {1} cannot be used as a BodyIoRTC because it is not derived from it."),
+                formatR(_("RTC \"{0}\" of {1} cannot be used as a BodyIoRTC because it is not derived from it."),
                        self->rtcModuleName(), self->name()),
                 MessageView::ERROR);
             self->deleteRTC(false);
@@ -255,14 +254,14 @@ bool BodyIoRTCItemImpl::createBodyIoRTC()
 
         if(!initialized){
             mv->putln(
-                format(_("RTC \"{0}\" of {1} failed to initialize."),
+                formatR(_("RTC \"{0}\" of {1} failed to initialize."),
                        self->rtcModuleName(), self->name()),
                 MessageView::ERROR);
             self->deleteRTC(true);
             return false;
         }
         
-        mv->putln(format(_("BodyIoRTC \"{}\" has been created."), self->rtcInstanceName()));
+        mv->putln(formatR(_("BodyIoRTC \"{}\" has been created."), self->rtcInstanceName()));
         
         return true;
     }

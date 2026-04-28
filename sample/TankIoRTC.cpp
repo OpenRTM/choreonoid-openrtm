@@ -2,12 +2,12 @@
    @author Shin'ichiro Nakaoka
 */
 
+#include <rtm/idl/BasicDataTypeSkel.h>
+#include <rtm/idl/ExtendedDataTypesSkel.h>
 #include <cnoid/BodyIoRTC>
 #include <cnoid/AccelerationSensor>
 #include <cnoid/RateGyroSensor>
 #include <cnoid/Light>
-#include <rtm/idl/BasicDataTypeSkel.h>
-#include <rtm/idl/ExtendedDataTypesSkel.h>
 #include <rtm/DataInPort.h>
 #include <rtm/DataOutPort.h>
 
