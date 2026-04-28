@@ -2,8 +2,8 @@
    @author Shin'ichiro Nakaoka
 */
 
-#include <cnoid/BodyIoRTC>
 #include <rtm/idl/BasicDataTypeSkel.h>
+#include <cnoid/BodyIoRTC>
 #include <rtm/DataInPort.h>
 #include <rtm/DataOutPort.h>
 

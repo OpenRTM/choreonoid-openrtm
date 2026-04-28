@@ -158,7 +158,7 @@ RTSConfigurationViewImpl::RTSConfigurationViewImpl(RTSConfigurationView* self)
     QHBoxLayout* compNameLayout = new QHBoxLayout(frmCompName);
     compNameLayout->addWidget(lblCompName);
     compNameLayout->addWidget(txtCompName_);
-    compNameLayout->setMargin(0);
+    compNameLayout->setContentsMargins(0, 0, 0, 0);
 
     lstConfigSet_ = new QTableWidget(0, 2);
     lstConfigSet_->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -189,14 +189,14 @@ RTSConfigurationViewImpl::RTSConfigurationViewImpl(RTSConfigurationView* self)
     setBtnLayout->addWidget(btnSetAdd);
     setBtnLayout->addWidget(btnSetDelete);
     setBtnLayout->addWidget(chkSetDetail_);
-    setBtnLayout->setMargin(1);
+    setBtnLayout->setContentsMargins(1, 1, 1, 1);
 
     QFrame* frmConfSet = new QFrame;
     QVBoxLayout* confSetLayout = new QVBoxLayout(frmConfSet);
     confSetLayout->addWidget(frmCompName);
     confSetLayout->addWidget(lstConfigSet_);
     confSetLayout->addWidget(frmSetButtons);
-    confSetLayout->setMargin(3);
+    confSetLayout->setContentsMargins(3, 3, 3, 3);
 
 
     QLabel* lblConfSet = new QLabel(_("Configuration Set : "));
@@ -207,7 +207,7 @@ RTSConfigurationViewImpl::RTSConfigurationViewImpl(RTSConfigurationView* self)
     QHBoxLayout* configLayout = new QHBoxLayout(frmConfig);
     configLayout->addWidget(lblConfSet);
     configLayout->addWidget(txtConfSetName_);
-    configLayout->setMargin(0);
+    configLayout->setContentsMargins(0, 0, 0, 0);
 
     lstDetail_ = new QTableWidget(0, 2);
     lstDetail_->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -236,14 +236,14 @@ RTSConfigurationViewImpl::RTSConfigurationViewImpl(RTSConfigurationView* self)
     btnLayout->addWidget(btnAdd);
     btnLayout->addWidget(btnDelete);
     btnLayout->addWidget(chkDetail_);
-    btnLayout->setMargin(1);
+    btnLayout->setContentsMargins(1, 1, 1, 1);
 
     QFrame* frmDetail = new QFrame;
     QVBoxLayout* detailLayout = new QVBoxLayout(frmDetail);
     detailLayout->addWidget(frmConfig);
     detailLayout->addWidget(lstDetail_);
     detailLayout->addWidget(frmButtons);
-    detailLayout->setMargin(3);
+    detailLayout->setContentsMargins(3, 3, 3, 3);
 
     QSplitter* splitter = new QSplitter(Qt::Orientation::Horizontal);
     splitter->addWidget(frmConfSet);
@@ -264,7 +264,7 @@ RTSConfigurationViewImpl::RTSConfigurationViewImpl(RTSConfigurationView* self)
     QHBoxLayout* mainLayout = new QHBoxLayout;
     mainLayout->addWidget(splitter);
     mainLayout->addWidget(frmMainButtons);
-    mainLayout->setMargin(0);
+    mainLayout->setContentsMargins(0, 0, 0, 0);
 
     setLayout(mainLayout);
 
@@ -431,9 +431,9 @@ void RTSConfigurationViewImpl::showConfigurationView()
         itemName->setText(param->getName());
         itemName->setData(Qt::UserRole, param->getId());
         if (param->isChangedName()) {
-            lstDetail_->item(row, 0)->setBackgroundColor("#FFC0C0");
+            lstDetail_->item(row, 0)->setBackground(QColor("#FFC0C0"));
         } else {
-            lstDetail_->item(row, 0)->setBackgroundColor(Qt::white);
+            lstDetail_->item(row, 0)->setBackground(Qt::white);
         }
 
         QTableWidgetItem* itemValue = new QTableWidgetItem;
@@ -441,9 +441,9 @@ void RTSConfigurationViewImpl::showConfigurationView()
         itemValue->setText(param->getValue());
         itemValue->setData(Qt::UserRole, param->getId());
         if (param->isChangedValue()) {
-            lstDetail_->item(row, 1)->setBackgroundColor("#FFC0C0");
+            lstDetail_->item(row, 1)->setBackground(QColor("#FFC0C0"));
         } else {
-            lstDetail_->item(row, 1)->setBackgroundColor(Qt::white);
+            lstDetail_->item(row, 1)->setBackground(Qt::white);
         }
     }
 }
@@ -573,9 +573,9 @@ void RTSConfigurationViewImpl::showConfigurationSetView()
         itemName->setText(param->getName());
         itemName->setData(Qt::UserRole, param->getId());
         if (param->isChangedName()) {
-            lstConfigSet_->item(row, 1)->setBackgroundColor("#FFC0C0");
+            lstConfigSet_->item(row, 1)->setBackground(QColor("#FFC0C0"));
         } else {
-            lstConfigSet_->item(row, 1)->setBackgroundColor(Qt::white);
+            lstConfigSet_->item(row, 1)->setBackground(Qt::white);
         }
     }
 
@@ -657,9 +657,9 @@ void RTSConfigurationViewImpl::updateConfigSet()
     (*targetConf)->setChanged();
 
     if ((*targetConf)->isChangedName()) {
-        lstConfigSet_->item(row, 1)->setBackgroundColor("#FFC0C0");
+        lstConfigSet_->item(row, 1)->setBackground(QColor("#FFC0C0"));
     } else {
-        lstConfigSet_->item(row, 1)->setBackgroundColor(Qt::white);
+        lstConfigSet_->item(row, 1)->setBackground(Qt::white);
     }
 }
 
@@ -675,9 +675,9 @@ void RTSConfigurationViewImpl::activeSetChanged()
             if( rowId==targetSet->getId()) {
                 DDEBUG_V("index:%d, row:%d", index, idxRow);
                 if (targetSet->isChangedActive()) {
-                    lstConfigSet_->item(idxRow, 0)->setBackgroundColor("#FFC0C0");
+                    lstConfigSet_->item(idxRow, 0)->setBackground(QColor("#FFC0C0"));
                 } else {
-                    lstConfigSet_->item(idxRow, 0)->setBackgroundColor(Qt::white);
+                    lstConfigSet_->item(idxRow, 0)->setBackground(Qt::white);
                 }
                 break;
             }
@@ -714,13 +714,13 @@ void RTSConfigurationViewImpl::updateDetail()
     currentSet_->setChanged();
 
     if ((*targetConf)->isChangedName()) {
-        lstDetail_->item(row, 0)->setBackgroundColor("#FFC0C0");
+        lstDetail_->item(row, 0)->setBackground(QColor("#FFC0C0"));
     } else {
-        lstDetail_->item(row, 0)->setBackgroundColor(Qt::white);
+        lstDetail_->item(row, 0)->setBackground(Qt::white);
     }
     if ((*targetConf)->isChangedValue()) {
-        lstDetail_->item(row, 1)->setBackgroundColor("#FFC0C0");
+        lstDetail_->item(row, 1)->setBackground(QColor("#FFC0C0"));
     } else {
-        lstDetail_->item(row, 1)->setBackgroundColor(Qt::white);
+        lstDetail_->item(row, 1)->setBackground(Qt::white);
     }
 }

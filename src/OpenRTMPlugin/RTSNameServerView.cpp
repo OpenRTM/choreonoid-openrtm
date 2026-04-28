@@ -671,7 +671,7 @@ void RTSNameTreeWidget::mouseMoveEvent(QMouseEvent *event)
     QDrag *drag = new QDrag(this);
     drag->setPixmap(QPixmap(":/Corba/icons/NSRTC.png"));
     drag->setMimeData(mimeData);
-    drag->start(Qt::MoveAction);
+    drag->exec(Qt::MoveAction);
 }
 
 

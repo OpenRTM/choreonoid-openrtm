@@ -26,7 +26,7 @@
 #include <QBoxLayout>
 #include <QDragEnterEvent>
 #include <QMessageBox>
-#include <fmt/format.h>
+#include <cnoid/Format>
 #include "gettext.h"
 
 using namespace cnoid;
@@ -903,7 +903,7 @@ void RTSDiagramViewImpl::dropEvent(QDropEvent *event)
     for (list<NamingContextHelper::ObjectInfo>::iterator it = nsViewSelections.begin(); it != nsViewSelections.end(); it++) {
         NamingContextHelper::ObjectInfo& info = *it;
         if (!info.isAlive_) {
-            MessageView::instance()->putln(fmt::format(_("{} is not alive"), info.id_));
+            MessageView::instance()->putln(formatR(_("{} is not alive"), info.id_));
         } else {
             addRTSComp(info, mapToScene(event->pos()));
             DDEBUG_V("%s", info.getFullPath().c_str());
@@ -1125,7 +1125,7 @@ void RTSDiagramViewImpl::mouseReleaseEvent(QMouseEvent *event)
 
 void RTSDiagramViewImpl::wheelEvent(QWheelEvent* event)
 {
-    double dSteps = (double)event->delta() / 120.0;
+    double dSteps = (double)event->angleDelta().y() / 120.0;
     double scaleVal = 1.0;
     scaleVal -= (dSteps / 20.0);
     scale(scaleVal, scaleVal);

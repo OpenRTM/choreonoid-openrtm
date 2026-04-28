@@ -3,9 +3,17 @@
    \author Shin'ichiro Nakaoka
 */
 
+#include <rtm/idl/InterfaceDataTypes.hh>
+#include <cnoid/corba/PointCloud.hh>
+#ifdef USE_BUILTIN_CAMERA_IMAGE_IDL
+# include "deprecated/corba/CameraImage.hh"
+#else
+# include <rtm/idl/CameraCommonInterface.hh>
+#endif
+
+
 #include "BodyStateSubscriberRTCItem.h"
 #include "OpenRTMUtil.h"
-#include <rtm/idl/InterfaceDataTypes.hh>
 #include <rtm/DataFlowComponentBase.h>
 #include <cnoid/BodyItem>
 #include <cnoid/RangeCamera>
@@ -16,15 +24,10 @@
 #include <cnoid/Config>
 #include <cnoid/MessageView>
 #include <cnoid/LazyCaller>
-#include <cnoid/corba/PointCloud.hh>
-#include <fmt/format.h>
+#include <cnoid/Format>
 #include <mutex>
 
-#ifdef USE_BUILTIN_CAMERA_IMAGE_IDL
-# include "deprecated/corba/CameraImage.hh"
-#else
-# include <rtm/idl/CameraCommonInterface.hh>
-#endif
+
 
 #include <rtm/DataInPort.h>
 
@@ -40,7 +43,6 @@
 
 using namespace std;
 using namespace cnoid;
-using fmt::format;
 
 namespace {
 
@@ -719,9 +721,9 @@ void BodyStateSubscriberRTCItemImpl::createRTC()
         "exec_cxt.periodic.type=PeriodicExecutionContext&"
         "exec_cxt.periodic.rate={1}");
     
-    RTC::RtcBase* rtc = createManagedRTC(format(param, self->name(), periodicRate));
+    RTC::RtcBase* rtc = createManagedRTC(formatR(param, self->name(), periodicRate));
     if(!rtc){
-        mv->putln(format(_("RTC for \"{}\" cannot be created."), self->name()), MessageView::ERROR);
+        mv->putln(formatR(_("RTC for \"{}\" cannot be created."), self->name()), MessageView::ERROR);
         return;
     }
 

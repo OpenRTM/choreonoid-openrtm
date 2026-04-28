@@ -5,10 +5,11 @@
 #ifndef TankJoystickControllerRTC_H
 #define TankJoystickControllerRTC_H
 
-#include <rtm/Manager.h>
-#include <rtm/DataFlowComponentBase.h>
 #include <rtm/idl/BasicDataTypeSkel.h>
 #include <rtm/idl/ExtendedDataTypesSkel.h>
+
+#include <rtm/Manager.h>
+#include <rtm/DataFlowComponentBase.h>
 #include <rtm/CorbaPort.h>
 #include <rtm/DataInPort.h>
 #include <rtm/DataOutPort.h>

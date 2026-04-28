@@ -2,30 +2,30 @@
    @author Shin'ichiro Nakaoka
 */
 
+#include <rtm/idl/BasicDataTypeSkel.h>
+#ifdef USE_BUILTIN_CAMERA_IMAGE_IDL
+# include "deprecated/corba/CameraImage.hh"
+#else
+# include <rtm/idl/CameraCommonInterface.hh>
+#endif
+
 #include "RTMImageView.h"
 #include "OpenRTMUtil.h"
 #include <cnoid/ImageWidget>
 #include <cnoid/ViewManager>
 #include <cnoid/LazyCaller>
 #include <cnoid/CorbaUtil>
-#include <rtm/idl/BasicDataTypeSkel.h>
 #include <rtm/DataFlowComponentBase.h>
 
-#ifdef USE_BUILTIN_CAMERA_IMAGE_IDL
-# include "deprecated/corba/CameraImage.hh"
-#else
-# include <rtm/idl/CameraCommonInterface.hh>
-#endif
 #include <rtm/DataInPort.h>
 
 #include <QBoxLayout>
-#include <fmt/format.h>
+#include <cnoid/Format>
 #include "gettext.h"
 
 using namespace std;
 using namespace cnoid;
 using namespace RTC;
-using fmt::format;
 
 namespace {
 
@@ -140,7 +140,7 @@ void RTMImageViewImpl::createRTC(const std::string& name)
     deleteRTC();
 
     auto args =
-        format("ImageView?instance_name={}&"
+        formatR("ImageView?instance_name={}&"
                "exec_cxt.periodic.type=PeriodicExecutionContext&exec_cxt.periodic.rate=30",
                self->name());
 
