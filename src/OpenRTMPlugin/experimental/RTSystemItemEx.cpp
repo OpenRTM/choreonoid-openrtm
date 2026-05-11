@@ -1705,7 +1705,7 @@ bool RTSystemItemEx::isCheckAtLoading()
 ///////////
 bool RTSystemItemEx::store(Archive& archive)
 {
-    if (overwrite()) {
+    if (overwriteOrSaveWithDialog()) {
         archive.writeRelocatablePath("filename", filePath());
         archive.write("format", fileFormat());
 
