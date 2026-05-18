@@ -31,6 +31,7 @@ public:
     bool isValid() const;
     const std::string& name() const;
     void activate();
+    const bool runningProcess() const;
 
 private:
     RTComponentImpl* impl;
