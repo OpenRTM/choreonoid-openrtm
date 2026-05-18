@@ -2,6 +2,7 @@
 #define CNOID_OPENRTM_PLUGIN_RT_SYSTEM_ITEM_H
 
 #include <cnoid/Item>
+#include <cnoid/ControllerItem>
 #include <cnoid/EigenUtil>
 #include <cnoid/IdPair>
 #include <cnoid/CorbaUtil>
@@ -23,7 +24,7 @@ class RTSystemItemImpl;
 /*!
  * @brief This is the RTSystem item.
  */
-class CNOID_EXPORT RTSystemItem : public Item, public RTSystem
+class CNOID_EXPORT RTSystemItem : public cnoid::ControllerItem, public RTSystem
 {
 public:
     typedef cnoid::IdPair<RTSPort*> RTSPortPair;
@@ -60,6 +61,9 @@ public:
 
     SignalProxy<void(int)> sigTimerPeriodChanged();
     SignalProxy<void(bool)> sigTimerChanged();
+
+    virtual bool start() override;
+    virtual void stop() override;
 
 protected:
     virtual Item* doDuplicate() const override;

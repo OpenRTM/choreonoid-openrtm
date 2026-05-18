@@ -44,6 +44,7 @@ public:
     bool createRTC(PropertyMap& properties);
     bool isValid() const;
     void setupModules(string& fileName, string& initFuncName, string& componentName, PropertyMap& properties);
+    const bool runningProcess() const;
     void createProcess(string& command, PropertyMap& properties);
     void deleteRTC();
     void activate();
@@ -168,10 +169,15 @@ Item* RTCItem::doDuplicate() const
 
 void RTCItem::setModuleName(const std::string& name)
 {
+    mv->putln(_("setModuleName."));
     DDEBUG_V("RTCItem::setModuleName %s", name.c_str());
     if (moduleName != name) {
         moduleName = name;
         updateRTCInstance();
+    }
+    else if (rtcomp->runningProcess())
+    {
+        updateRTCInstance(true);
     }
 }
 
@@ -453,13 +459,24 @@ const std::string& RTComponent::name() const
 }
 
 
+const bool RTComponent::runningProcess() const
+{
+    return impl->runningProcess();
+}
+
+const bool RTComponentImpl::runningProcess() const
+{
+    return (rtcProcess.state() != QProcess::NotRunning);
+}
+
+
 void RTComponentImpl::createProcess(string& command, PropertyMap& prop)
 {
     DDEBUG("RTComponent::createProcess");
 
     QStringList argv;
     argv.push_back(QString("-o"));
-    argv.push_back(QString("naming.formats: %n.rtc"));
+    argv.push_back(QString("naming.formats: choreonoid.host_cxt/%n.rtc"));
     argv.push_back(QString("-o"));
     argv.push_back(QString("logger.enable: NO"));
     for (PropertyMap::iterator it = prop.begin(); it != prop.end(); it++) {
@@ -467,6 +484,7 @@ void RTComponentImpl::createProcess(string& command, PropertyMap& prop)
         argv.push_back(QString(string(it->first + ":" + it->second).c_str()));
     }
     if (rtcProcess.state() != QProcess::NotRunning) {
+        mv->putln(formatR(_("RTComponent kill")));
         rtcProcess.kill();
         rtcProcess.waitForFinished(100);
     }

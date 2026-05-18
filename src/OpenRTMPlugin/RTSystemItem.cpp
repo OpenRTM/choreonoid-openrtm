@@ -7,6 +7,8 @@
 #include <cnoid/AppConfig>
 #include <cnoid/PutPropertyFunction>
 #include <rtm/CORBA_SeqUtil.h>
+#include <rtm/CORBA_RTCUtil.h>
+#include <rtm/CorbaNaming.h>
 #include <cnoid/Format>
 #include "LoggerUtil.h"
 #include "gettext.h"
@@ -99,6 +101,10 @@ public:
 
     void changeStateCheck();
     void changePollingPeriod(int value);
+
+    bool start();
+    void stop();
+    RTCList* getRTCList();
 
 private:
     void setStateCheckMethod(int value);
@@ -625,7 +631,7 @@ RTSystemItemImpl::RTSystemItemImpl(RTSystemItem* self)
 
 
 RTSystemItem::RTSystemItem(const RTSystemItem& org)
-    : Item(org)
+    : cnoid::ControllerItem(org)
 {
     impl = new RTSystemItemImpl(this, *org.impl);
 }
@@ -1121,6 +1127,111 @@ void RTSystemItemImpl::changeStateCheck()
     }
 }
 
+RTCList* RTSystemItemImpl::getRTCList()
+{
+    RTCList_var crtcs = new RTCList();
+    auto& manager = RTC::Manager::instance();
+    try
+    {
+        CorbaNaming cns(manager.theORB(), "localhost:2809");
+        CORBA::Object_var obj = cns.resolveStr("choreonoid.host_cxt");
+        try
+        {
+            CosNaming::NamingContext_var choreonoid_context = CosNaming::NamingContext::
+                _narrow(obj);
+            CORBA::ULong length = 500;
+            CosNaming::BindingList_var bl;
+            CosNaming::BindingIterator_var bi;
+            choreonoid_context->list(length, bl, bi);
+            CORBA::ULong len(bl->length());
+            for (CORBA::ULong i = 0; i < len; ++i)
+            {
+                if (bl[i].binding_type == CosNaming::nobject)
+                {
+                    if (std::string(bl[i].binding_name[0].kind) == "rtc")
+                    {
+                        try
+                        {
+                            RTC::RTObject_var rtc = RTC::RTObject::_narrow(choreonoid_context->resolve(bl[i].binding_name));
+                            if (!rtc->_non_existent())
+                            {
+                                CORBA_SeqUtil::push_back(crtcs.inout(), rtc._retn());
+                            }
+                        }
+                        catch (...)
+                        {
+
+                        }
+                    }
+                }
+            }
+        }
+        catch (CosNaming::NamingContext::NotFound& e)
+        {
+            MessageView::instance()->putln(
+                formatR(_("NOT FOUND: {0}."),
+                    cns.toString(e.rest_of_name)), MessageView::WARNING);
+            return crtcs._retn();
+        }
+        catch (CosNaming::NamingContext::CannotProceed& e)
+        {
+            MessageView::instance()->putln(
+                formatR(_("Cannot proceed: {0}."),
+                    cns.toString(e.rest_of_name)), MessageView::WARNING);
+            return crtcs._retn();
+        }
+        catch (CosNaming::NamingContext::InvalidName& /*e*/)
+        {
+            MessageView::instance()->putln(
+                formatR(_("Invalid name: choreonoid.")), MessageView::WARNING);
+            return crtcs._retn();
+        }
+
+    }
+    catch (...)
+    {
+        return crtcs._retn();
+    }
+    return crtcs._retn();
+}
+
+bool RTSystemItemImpl::start()
+{
+    RTC::RTCList rtc_list = *getRTCList();
+
+    for (CORBA::ULong i = 0; i < rtc_list.length(); i++)
+    {
+        RTC::RTObject_var rtc = RTObject::_duplicate(rtc_list[i]);
+        if (CORBA_RTCUtil::is_in_error(rtc.inout()))
+        {
+            CORBA_RTCUtil::reset(rtc.inout());
+        }
+        if (CORBA_RTCUtil::is_in_inactive(rtc.inout()))
+        {
+            CORBA_RTCUtil::activate(rtc.inout());
+        }
+    }
+    return true;
+}
+
+void RTSystemItemImpl::stop()
+{
+    RTC::RTCList rtc_list = *getRTCList();
+
+    for (CORBA::ULong i = 0; i < rtc_list.length(); i++)
+    {
+        RTC::RTObject_var rtc = RTObject::_duplicate(rtc_list[i]);
+        if (CORBA_RTCUtil::is_in_error(rtc.inout()))
+        {
+            CORBA_RTCUtil::reset(rtc.inout());
+        }
+        if (CORBA_RTCUtil::is_in_active(rtc.inout()))
+        {
+            CORBA_RTCUtil::deactivate(rtc.inout());
+        }
+    }
+}
+
 bool RTSystemItem::loadRtsProfile(const string& filename)
 {
     DDEBUG_V("RTSystemItem::loadRtsProfile=%s", filename.c_str());
@@ -1400,4 +1511,14 @@ SignalProxy<void(int)> RTSystemItem::sigTimerPeriodChanged()
 SignalProxy<void(bool)> RTSystemItem::sigTimerChanged()
 {
     return impl->sigTimerChanged;
+}
+
+bool RTSystemItem::start()
+{
+    return impl->start();
+}
+
+void RTSystemItem::stop()
+{
+    impl->stop();
 }
