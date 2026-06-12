@@ -79,7 +79,7 @@ RTC::ReturnCode_t SR1LiftupControllerRTC::onInitialize()
     addOutPort("u_out", m_torqueOut);
 
     string modelfile = getNativePathString(
-       cnoid::stdx::filesystem::path(shareDirectory()) / "model/SR1/SR1.body");
+        std::filesystem::path(shareDirectory()) / "model/SR1/SR1.body");
             
     BodyLoader loader;
     loader.setMessageSink(cout);

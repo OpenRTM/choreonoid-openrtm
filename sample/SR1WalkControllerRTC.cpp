@@ -74,7 +74,7 @@ RTC::ReturnCode_t SR1WalkControllerRTC::onActivated(RTC::UniqueId ec_id)
 {
     if(!qseq){
         string filename = getNativePathString(
-            cnoid::stdx::filesystem::path(shareDirectory())
+            std::filesystem::path(shareDirectory())
             / "motion" / "SR1" / "SR1WalkPattern1.seq");
 
         BodyMotion motion;

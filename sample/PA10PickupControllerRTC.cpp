@@ -70,7 +70,7 @@ RTC::ReturnCode_t PA10PickupControllerRTC::onInitialize()
     addOutPort("u_out", m_torqueOut);
 
     string modelfile = getNativePathString(
-        cnoid::stdx::filesystem::path(shareDirectory()) / "model/PA10/PA10.body");
+        std::filesystem::path(shareDirectory()) / "model/PA10/PA10.body");
             
     BodyLoader loader;
     loader.setMessageSink(cout);
