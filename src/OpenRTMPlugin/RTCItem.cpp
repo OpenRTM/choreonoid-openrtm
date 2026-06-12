@@ -17,6 +17,7 @@
 #include <rtm/RTObject.h>
 #include <cnoid/Format>
 #include "gettext.h"
+#include <rtm/CORBA_RTCUtil.h>
 
 #include "LoggerUtil.h"
 
@@ -34,13 +35,13 @@ class RTComponentImpl
 public:
     RTC::RTObject_var rtcRef;
     RTC::RtcBase* rtc_;
-    cnoid::stdx::filesystem::path modulePath;
+    std::filesystem::path modulePath;
     Process rtcProcess;
     std::string componentName;
     MessageView* mv;
 
-    RTComponentImpl(const cnoid::stdx::filesystem::path& modulePath, PropertyMap& prop);
-    void init(const cnoid::stdx::filesystem::path& modulePath, PropertyMap& properties);
+    RTComponentImpl(const std::filesystem::path& modulePath, PropertyMap& prop);
+    void init(const std::filesystem::path& modulePath, PropertyMap& properties);
     bool createRTC(PropertyMap& properties);
     bool isValid() const;
     void setupModules(string& fileName, string& initFuncName, string& componentName, PropertyMap& properties);
@@ -48,6 +49,7 @@ public:
     void createProcess(string& command, PropertyMap& properties);
     void deleteRTC();
     void activate();
+    void deactivate();
     void onReadyReadServerProcessOutput();
 };
 
@@ -92,19 +94,20 @@ RTCItem::RTCItem()
     ss << periodicRate;
     properties.insert(make_pair(string("exec_cxt.periodic.rate"), ss.str()));
 
+    baseDirectoryType.setSymbol(NO_BASE_DIRECTORY, N_("None"));
     baseDirectoryType.setSymbol(RTC_DIRECTORY, N_("RTC directory"));
     baseDirectoryType.setSymbol(PROJECT_DIRECTORY, N_("Project directory"));
     baseDirectoryType.select(RTC_DIRECTORY);
     oldBaseDirectoryType = baseDirectoryType.which();
 
-    rtcDirectory = cnoid::stdx::filesystem::path(executableTopDirectory()) / CNOID_PLUGIN_SUBDIR / "rtc";
+    rtcDirectory = std::filesystem::path(executableTopDirectory()) / CNOID_PLUGIN_SUBDIR / "rtc";
 
     isActivationEnabled_ = false;
 }
 
 
 RTCItem::RTCItem(const RTCItem& org)
-    : Item(org),
+    : ControllerItem(org),
     os(MessageView::instance()->cout()),
     periodicType(org.periodicType),
     baseDirectoryType(org.baseDirectoryType),
@@ -224,6 +227,22 @@ void RTCItem::setActivationEnabled(bool on)
     }
 }
 
+bool RTCItem::start()
+{
+    if (rtcomp) {
+        rtcomp->activate();
+    }
+    return true;
+}
+
+
+void RTCItem::stop()
+{
+    if (rtcomp) {
+        rtcomp->deactivate();
+    }
+}
+
 void RTCItem::doPutProperties(PutPropertyFunction& putProperty)
 {
     Item::doPutProperties(putProperty);
@@ -255,6 +274,9 @@ bool RTCItem::store(Archive& archive)
     if (!Item::store(archive)) {
         return false;
     }
+    std::filesystem::path projectDirectory = archive.projectDirectory();
+    setbaseDirectoryType(projectDirectory);
+    
     archive.writeRelocatablePath("module", moduleName);
     archive.write("baseDirectory", baseDirectoryType.selectedSymbol(), DOUBLE_QUOTED);
     archive.write("periodicType", periodicType.selectedSymbol());
@@ -268,14 +290,14 @@ bool RTCItem::restore(const Archive& archive)
 {
     DDEBUG("RTCItem::restore");
     
-    projectDirectory = archive.projectDirectory();
+    projectDirectoryPath = archive.projectDirectory();
 
     if (!Item::restore(archive)) {
         return false;
     }
     string value;
     if (archive.read("module", value) || archive.read("moduleName", value)) {
-        cnoid::stdx::filesystem::path path(archive.expandPathVariables(value));
+        std::filesystem::path path(archive.expandPathVariables(value));
         moduleName = path.make_preferred().string();
     }
     if (archive.read("baseDirectory", value) || archive.read("RelativePathBase", value)) {
@@ -299,26 +321,60 @@ bool RTCItem::restore(const Archive& archive)
 }
 
 
+void RTCItem::setbaseDirectoryType(std::filesystem::path& projectDirectory)
+{
+		if (modulePath.is_absolute()) {
+			auto rel = std::filesystem::weakly_canonical(modulePath).lexically_relative(std::filesystem::weakly_canonical(projectDirectory));
+			if(!rel.empty() && *rel.begin() != "..")
+			{
+				baseDirectoryType.select(PROJECT_DIRECTORY);
+				notifyUpdate();
+				return;
+			}
+			else
+			{
+				rel = std::filesystem::weakly_canonical(modulePath).lexically_relative(std::filesystem::weakly_canonical(rtcDirectory));
+				if(!rel.empty() && *rel.begin() != "..")
+				{
+					baseDirectoryType.select(RTC_DIRECTORY);
+					notifyUpdate();
+					return;
+				}
+
+			}
+			
+			baseDirectoryType.select(NO_BASE_DIRECTORY);
+			notifyUpdate();
+			return;
+			
+		}
+}
+
 bool RTCItem::convertAbsolutePath()
 {
     modulePath = moduleName;
+    if (moduleName.empty())
+    {
+        return false;
+    }
     if (!modulePath.is_absolute()) {
         if (baseDirectoryType.is(RTC_DIRECTORY)) {
             modulePath = rtcDirectory / modulePath;
         } else if (baseDirectoryType.is(PROJECT_DIRECTORY)) {
+			
             string projectDir = ProjectManager::instance()->currentProjectDirectory();
             if (projectDir.empty()) {
-                if(projectDirectory.empty())
+                if(projectDirectoryPath.empty())
                 {
                     mv->putln(_("Please save the project."));
                     return false;
                 }
                 else
                 {
-                    modulePath = cnoid::stdx::filesystem::path(projectDirectory) / modulePath;
+                    modulePath = std::filesystem::path(projectDirectoryPath) / modulePath;
                 }
             } else {
-                modulePath = cnoid::stdx::filesystem::path(projectDir) / modulePath;
+                modulePath = std::filesystem::path(projectDir) / modulePath;
             }
         }
     }
@@ -326,14 +382,14 @@ bool RTCItem::convertAbsolutePath()
 }
 
 
-RTComponent::RTComponent(const cnoid::stdx::filesystem::path& modulePath, PropertyMap& prop)
+RTComponent::RTComponent(const std::filesystem::path& modulePath, PropertyMap& prop)
 {
     DDEBUG("RTComponent::RTComponent");
     impl = new RTComponentImpl(modulePath, prop);
 }
 
 
-RTComponentImpl::RTComponentImpl(const cnoid::stdx::filesystem::path& modulePath, PropertyMap& prop)
+RTComponentImpl::RTComponentImpl(const std::filesystem::path& modulePath, PropertyMap& prop)
 {
     rtc_ = nullptr;
     rtcRef = RTC::RTObject::_nil();
@@ -350,7 +406,7 @@ RTComponent::~RTComponent()
 }
 
 
-void RTComponentImpl::init(const cnoid::stdx::filesystem::path& modulePath_, PropertyMap& prop)
+void RTComponentImpl::init(const std::filesystem::path& modulePath_, PropertyMap& prop)
 {
     DDEBUG("RTComponentImpl::init");
     mv = MessageView::instance();
@@ -373,7 +429,7 @@ bool RTComponentImpl::createRTC(PropertyMap& prop)
 
     string actualFilename;
 
-    if (cnoid::stdx::filesystem::exists(modulePath)) {
+    if (std::filesystem::exists(modulePath)) {
         actualFilename = getNativePathString(modulePath);
         if (modulePath.extension() == DLL_SUFFIX) {
             string initFunc(componentName + "Init");
@@ -382,13 +438,13 @@ bool RTComponentImpl::createRTC(PropertyMap& prop)
             createProcess(actualFilename, prop);
         }
     } else {
-        cnoid::stdx::filesystem::path exePath(modulePath.string() + EXEC_SUFFIX);
-        if (cnoid::stdx::filesystem::exists(exePath)) {
+        std::filesystem::path exePath(modulePath.string() + EXEC_SUFFIX);
+        if (std::filesystem::exists(exePath)) {
             actualFilename = getNativePathString(exePath);
             createProcess(actualFilename, prop);
         } else {
-            cnoid::stdx::filesystem::path dllPath(modulePath.string() + DLL_SUFFIX);
-            if (cnoid::stdx::filesystem::exists(dllPath)) {
+            std::filesystem::path dllPath(modulePath.string() + DLL_SUFFIX);
+            if (std::filesystem::exists(dllPath)) {
                 actualFilename = getNativePathString(dllPath);
                 string initFunc(componentName + "Init");
                 setupModules(actualFilename, initFunc, componentName, prop);
@@ -551,12 +607,43 @@ void RTComponent::activate()
 void RTComponentImpl::activate()
 {
     if (rtc_) {
+        /*
         RTC::ExecutionContextList_var eclist = rtc_->get_owned_contexts();
         for (CORBA::ULong i = 0; i < eclist->length(); ++i) {
             if (!CORBA::is_nil(eclist[i])) {
                 eclist[i]->activate_component(rtc_->getObjRef());
                 break;
             }
+        }
+        */
+        
+        if (CORBA_RTCUtil::is_in_error(rtc_->getObjRef()))
+        {
+            CORBA_RTCUtil::reset(rtc_->getObjRef());
+        }
+        if (CORBA_RTCUtil::is_in_inactive(rtc_->getObjRef()))
+        {
+            CORBA_RTCUtil::activate(rtc_->getObjRef());
+        }
+    }
+}
+
+void RTComponent::deactivate()
+{
+    impl->deactivate();
+}
+
+
+void RTComponentImpl::deactivate()
+{
+    if (rtc_) {
+        if (CORBA_RTCUtil::is_in_error(rtc_->getObjRef()))
+        {
+            CORBA_RTCUtil::reset(rtc_->getObjRef());
+        }
+        if (CORBA_RTCUtil::is_in_active(rtc_->getObjRef()))
+        {
+            CORBA_RTCUtil::deactivate(rtc_->getObjRef());
         }
     }
 }
