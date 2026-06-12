@@ -91,6 +91,7 @@ private:
     int oldBaseDirectoryType;
     stdx::filesystem::path rtcDirectory;
     stdx::filesystem::path modulePath;
+    stdx::filesystem::path projectDirectory;
     bool isActivationEnabled_;
 
     void deleteRTCInstance();

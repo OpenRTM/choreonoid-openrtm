@@ -267,6 +267,8 @@ bool RTCItem::store(Archive& archive)
 bool RTCItem::restore(const Archive& archive)
 {
     DDEBUG("RTCItem::restore");
+    
+    projectDirectory = archive.projectDirectory();
 
     if (!Item::restore(archive)) {
         return false;
@@ -306,8 +308,15 @@ bool RTCItem::convertAbsolutePath()
         } else if (baseDirectoryType.is(PROJECT_DIRECTORY)) {
             string projectDir = ProjectManager::instance()->currentProjectDirectory();
             if (projectDir.empty()) {
-                mv->putln(_("Please save the project."));
-                return false;
+                if(projectDirectory.empty())
+                {
+                    mv->putln(_("Please save the project."));
+                    return false;
+                }
+                else
+                {
+                    modulePath = cnoid::stdx::filesystem::path(projectDirectory) / modulePath;
+                }
             } else {
                 modulePath = cnoid::stdx::filesystem::path(projectDir) / modulePath;
             }
