@@ -94,6 +94,7 @@ RTCItem::RTCItem()
     ss << periodicRate;
     properties.insert(make_pair(string("exec_cxt.periodic.rate"), ss.str()));
 
+    baseDirectoryType.setSymbol(NO_BASE_DIRECTORY, N_("None"));
     baseDirectoryType.setSymbol(RTC_DIRECTORY, N_("RTC directory"));
     baseDirectoryType.setSymbol(PROJECT_DIRECTORY, N_("Project directory"));
     baseDirectoryType.select(RTC_DIRECTORY);
