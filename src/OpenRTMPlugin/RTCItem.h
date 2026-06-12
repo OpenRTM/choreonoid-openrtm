@@ -1,7 +1,7 @@
 #ifndef CNOID_OPENRTM_PLUGIN_RTC_ITEM_H
 #define CNOID_OPENRTM_PLUGIN_RTC_ITEM_H
 
-#include <cnoid/Item>
+#include <cnoid/ControllerItem>
 #include <cnoid/Selection>
 #include <cnoid/stdx/filesystem>
 #include <map>
@@ -24,20 +24,21 @@ class RTComponentImpl;
 class RTComponent
 {
 public:
-    RTComponent(const stdx::filesystem::path& modulePath, PropertyMap& properties);
+    RTComponent(const std::filesystem::path& modulePath, PropertyMap& properties);
     ~RTComponent();
     void deleteRTC();
     RTC::RtcBase* rtc();
     bool isValid() const;
     const std::string& name() const;
     void activate();
+    void deactivate();
     const bool runningProcess() const;
 
 private:
     RTComponentImpl* impl;
 };
 
-class CNOID_EXPORT RTCItem : public Item
+class CNOID_EXPORT RTCItem : public ControllerItem
 {
 public:
     static void initialize(ExtensionManager* ext);
@@ -69,6 +70,8 @@ public:
     void setBaseDirectoryType(int base);
     void setActivationEnabled(bool on);
     bool isActivationEnabled() const { return isActivationEnabled_; }
+    virtual bool start() override;
+    virtual void stop() override;
 
 protected:
     virtual void onConnectedToRoot() override;
@@ -89,14 +92,15 @@ private:
     PropertyMap properties;
     Selection baseDirectoryType;
     int oldBaseDirectoryType;
-    stdx::filesystem::path rtcDirectory;
-    stdx::filesystem::path modulePath;
-    stdx::filesystem::path projectDirectory;
+    std::filesystem::path rtcDirectory;
+    std::filesystem::path modulePath;
+    std::filesystem::path projectDirectoryPath;
     bool isActivationEnabled_;
 
     void deleteRTCInstance();
     void updateRTCInstance(bool forceUpdate = true);
     bool convertAbsolutePath();
+    void setbaseDirectoryType(std::filesystem::path& projectDirectory);
 };
 
 typedef ref_ptr<RTCItem> RTCItemPtr;

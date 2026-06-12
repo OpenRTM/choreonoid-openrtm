@@ -81,6 +81,11 @@ public:
     void doPutProperties(PutPropertyFunction& putProperty);
     bool store(Archive& archive);
     bool restore(const Archive& archive);
+    
+ private:     
+    void setBaseDirectoryType(std::filesystem::path& projectDirectory);
+    std::filesystem::path getModuleFullPath(std::filesystem::path& modulePath);
+    std::filesystem::path projectDirectoryPath;
 };
 
 }
@@ -187,8 +192,63 @@ void ControllerRTCItem::setRTCModule(const std::string& name)
 }
 
 
+void ControllerRTCItemImpl::setBaseDirectoryType(std::filesystem::path& projectDirectory)
+{
+	std::filesystem::path modulePath(moduleNameProperty);
+	if (modulePath.is_absolute()) {
+		auto rel = std::filesystem::weakly_canonical(modulePath).lexically_relative(std::filesystem::weakly_canonical(projectDirectory));
+		if(!rel.empty() && *rel.begin() != "..")
+		{
+			baseDirectoryType.select(PROJECT_DIRECTORY);
+			self->notifyUpdate();
+			return;
+		}
+		else
+		{
+			rel = std::filesystem::weakly_canonical(modulePath).lexically_relative(std::filesystem::weakly_canonical(rtcDirectory));
+			if(!rel.empty() && *rel.begin() != "..")
+			{
+				baseDirectoryType.select(RTC_DIRECTORY);
+				self->notifyUpdate();
+				return;
+			}
+		}	
+		baseDirectoryType.select(NO_BASE_DIRECTORY);
+		self->notifyUpdate();
+		return;	
+	}	
+}
+
+std::filesystem::path ControllerRTCItemImpl::getModuleFullPath(std::filesystem::path& modulePath)
+{
+	if (!modulePath.is_absolute())
+	{
+		if (baseDirectoryType.is(NO_BASE_DIRECTORY)) {
+			return modulePath;
+		}
+		else if (baseDirectoryType.is(RTC_DIRECTORY)) {
+			return rtcDirectory / modulePath;
+		}
+		else if (baseDirectoryType.is(PROJECT_DIRECTORY)) {
+			std::string projectDir = ProjectManager::instance()->currentProjectDirectory();
+			if(!projectDir.empty())
+			{
+				return std::filesystem::path(projectDir) / modulePath;
+			}
+			else if(!projectDirectoryPath.empty())
+			{
+				return projectDirectoryPath / modulePath;
+			}
+				
+		}
+	}
+	return modulePath;
+}
+
+
 void ControllerRTCItemImpl::setRTCModule(const std::string& name)
 {
+    /*
     if(name != moduleNameProperty){
         std::filesystem::path modulePath(name);
         if(modulePath.is_absolute()){
@@ -207,6 +267,14 @@ void ControllerRTCItemImpl::setRTCModule(const std::string& name)
         moduleNameProperty = modulePath.string();
         self->createRTC();
     }
+    */
+    if (name.empty())
+    {
+        return;
+    }
+    std::filesystem::path path = std::filesystem::path(name);
+    moduleNameProperty = getModuleFullPath(path).string();
+    self->createRTC();
 }
 
 
@@ -297,9 +365,14 @@ std::string ControllerRTCItemImpl::getModuleFilename()
     }
     
     std::filesystem::path path(moduleNameProperty);
+    
+    path = getModuleFullPath(path);
+
+    
 
     moduleName = path.stem().string();
     
+    /*
     if(!path.is_absolute()){
         if(baseDirectoryType.is(RTC_DIRECTORY)){
             path = rtcDirectory / path;
@@ -323,6 +396,7 @@ std::string ControllerRTCItemImpl::getModuleFilename()
         path += ".";
         path += DLL_EXTENSION;
     }
+    */
         
     if(std::filesystem::exists(path)){
         return path.string();
@@ -661,6 +735,8 @@ bool ControllerRTCItem::store(Archive& archive)
 
 bool ControllerRTCItemImpl::store(Archive& archive)
 {
+    std::filesystem::path projectDirectory = archive.projectDirectory();
+    setBaseDirectoryType(projectDirectory);
     archive.writeRelocatablePath("module", moduleNameProperty);
     archive.write("baseDirectory", baseDirectoryType.selectedSymbol(), DOUBLE_QUOTED);
     archive.write("instanceName", rtcInstanceNameProperty, DOUBLE_QUOTED);
@@ -681,6 +757,7 @@ bool ControllerRTCItem::restore(const Archive& archive)
 bool ControllerRTCItemImpl::restore(const Archive& archive)
 {
     DDEBUG("ControllerRTCItemImpl::restore");
+    projectDirectoryPath = archive.projectDirectory();
     string value;
     if(archive.read("module", value) || archive.read("moduleName", value)){
         std::filesystem::path path(archive.expandPathVariables(value));
