@@ -1,0 +1,22 @@
+Source: choreonoid-openrtm
+Section: science
+Priority: optional
+Maintainer: Nobuhiko Miyamoto <n-miyamoto@aist.go.jp>
+Rules-Requires-Root: no
+Build-Depends:
+ debhelper-compat (= 13),
+ cmake,
+Standards-Version: 4.6.2
+Homepage: https://openrtm.org/
+
+Package: choreonoid-openrtm
+Architecture: any
+Multi-Arch: foreign
+Depends: ${misc:Depends}, choreonoid-corba
+Description: Plugin for integrating Choreonoid with OpenRTM-aist 
+ This plugin provides integration between Choreonoid and OpenRTM-aist.
+ It enables users to build simulation systems in Choreonoid by combining
+ RT-Components.
+ The plugin provides functionality for launching RT-Components,
+ a simulation execution context for OpenRTM-aist, and a system editor
+ for configuring and managing component-based systems.

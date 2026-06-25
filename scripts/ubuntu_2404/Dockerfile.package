@@ -1,0 +1,43 @@
+FROM ubuntu:24.04
+
+ENV TZ=Asia/Tokyo
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+RUN apt-get update && apt-get install -y\
+ software-properties-common\ 
+ g++\
+ make\
+ cmake\
+ wget\
+ gnupg\
+ build-essential\
+ debhelper\
+ devscripts\
+ libjpeg-dev\
+ libomniorb4-dev\
+ omniidl
+ 
+RUN add-apt-repository ppa:choreonoid.org/stable\
+ && apt-get update && apt-get install -y\
+ choreonoid
+
+RUN mkdir -p /etc/apt/keyrings\
+ && wget http://openrtm.org/pub/openrtm-keyring.gpg -O /etc/apt/keyrings/openrtm-keyring.gpg\
+ && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/openrtm-keyring.gpg] http://openrtm.org/pub/Linux/ubuntu/ $(cat /etc/os-release | sed -n 's/VERSION_CODENAME=//p') main" > /etc/apt/sources.list.d/openrtm.list \
+ && apt-get update && apt-get install -y\
+ openrtm2-dev\
+ choreonoid-corba
+ 
+COPY choreonoid-openrtm /root/choreonoid-openrtm
+WORKDIR /root/choreonoid-openrtm
+RUN cmake\
+  -S /root/choreonoid-openrtm\
+  -B /tmp/rtm/build\
+ && cmake --build /tmp/rtm/build --target install/strip -- -j$(nproc)
+
+WORKDIR /root/choreonoid-openrtm/packages/deb/
+RUN chmod 775 dpkg_build.sh\
+ && ./dpkg_build.sh
+
+RUN mkdir -p /root/cnoid-openrtm-deb-pkgs\
+ && cp /root/choreonoid*.* /root/cnoid-openrtm-deb-pkgs/
